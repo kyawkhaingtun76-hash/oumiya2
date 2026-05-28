@@ -14,21 +14,26 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
 
+# Firebase Admin SDK の初期化（Render Secret Files 直参照）
 try:
+    # デバッグ用：シークレットディレクトリ内のファイル一覧をログに出力
+    if os.path.exists('/etc/secrets'):
+        print("Secret files available:", os.listdir('/etc/secrets'))
+    else:
+        print("WARNING: /etc/secrets directory not found. Local environment assumed.")
+
     if not firebase_admin._apps:
-        # Renderの環境変数、またはローカルのフォールバックパスを取得
-        cred_path = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+        # Render上の秘密ファイルへの絶対パス
+        secret_path = "/etc/secrets/firebase-credentials.json"
         
-        print(f"DEBUG: Attempting to initialize Firebase. Path: {cred_path}")
-        
-        if cred_path and os.path.exists(cred_path):
-            cred = credentials.Certificate(cred_path)
+        if os.path.exists(secret_path):
+            cred = credentials.Certificate(secret_path)
             firebase_admin.initialize_app(cred)
-            print(f"SUCCESS: Firebase Admin SDK initialized via path: {cred_path}")
+            print("Firebase Admin initialized successfully.")
         else:
-            print(f"WARNING: Firebase credentials file not found at '{cred_path}'. Token verification will fail.")
+            print(f"WARNING: '{secret_path}' not found. Token verification will fail.")
 except Exception as e:
-    print(f"CRITICAL ERROR: Firebase Admin failed to initialize. Details: {e}")
+    print(f"Firebase init error: {e}")
 
 ADMIN_EMAIL_WHITELIST = "kd1427178@st.kobedenshi.ac.jp"
 
