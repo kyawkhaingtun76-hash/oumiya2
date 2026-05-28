@@ -23,13 +23,13 @@ try:
             firebase_admin.initialize_app(cred)
             print(f"SUCCESS: Firebase Admin SDK initialized via path: {cred_path}")
         else:
-            firebase_admin.initialize_app()
-            print("SUCCESS: Firebase Admin initialized via default machine credentials.")
+            print("WARNING: Firebase credentials file not found. Token verification will fail.")
 except Exception as e:
     print(f"CRITICAL ERROR: Firebase Admin failed to initialize. Details: {e}")
 
 ADMIN_EMAIL_WHITELIST = "kd1427178@st.kobedenshi.ac.jp"
 
+# Render persistent disk or local fallback
 STORAGE_BASE = os.environ.get('RENDER_DISK_MOUNT_PATH', '.')
 UPLOAD_FOLDER = os.path.join(STORAGE_BASE, 'uploads')
 DATA_FILE = os.path.join(STORAGE_BASE, 'site_data.json')
