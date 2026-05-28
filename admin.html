@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>居酒屋 おうみや | 総合管理画面ダッシュボード</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght=300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: { 400: '#ec9b42', 500: '#c5812b', 600: '#a36720', 800: '#613711', 950: '#1a1107' },
+                        charcoal: { 800: '#1c1917', 900: '#0f0d0c', 950: '#070605' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .custom-tab-active { border-color: #ec9b42; color: #ec9b42; background-color: rgba(197, 129, 43, 0.05); }
+        .login-glow { box-shadow: 0 0 30px rgba(197, 129, 43, 0.15); }
+    </style>
+</head>
+<body class="bg-charcoal-950 text-stone-100 min-h-screen selection:bg-gold-500 selection:text-charcoal-950">
+
+    <div id="login-wall" class="fixed inset-0 z-[100] flex items-center justify-center bg-charcoal-950 px-4">
+        <div class="absolute inset-0 opacity-5 pointer-events-none">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ec9b42" stroke-width="1"/>
+                        <circle cx="20" cy="20" r="2" fill="#ec9b42" />
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+            </svg>
+        </div>
+
+        <div class="relative w-full max-w-md bg-charcoal-900 border border-gold-800/40 p-8 rounded shadow-2xl login-glow space-y-6 text-center">
+            <div class="space-y-2">
+                <div class="w-16 h-16 mx-auto bg-gold-500/10 border border-gold-500/30 rounded-full flex items-center justify-center text-gold-500">
+                    <i class="fa-solid fa-shield-halved text-2xl"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-widest text-gold-400 font-serif">おうみや 管理パネル</h1>
+                <p class="text-xs text-stone-400">関係者専用の総合管理システムです。登録されたGoogleアカウントでサインインして管理画面をアンロックしてください。</p>
+            </div>
+
+            <div class="space-y-4 pt-2">
+                <button onclick="handleGoogleLoginOnly()" class="w-full bg-white hover:bg-stone-100 text-stone-800 font-bold text-sm py-3.5 px-4 rounded shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                    </svg>
+                    <span>Googleアカウントでログイン</span>
+                </button>
+            </div>
+
+            <div id="auth-error-msg" class="hidden text-xs text-red-400 flex flex-col gap-1.5 bg-red-500/10 border border-red-500/20 p-3.5 rounded text-left">
+                <div class="flex items-center gap-1.5 font-bold">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    <span>ログインできません</span>
+                </div>
+                <span id="error-text-span" class="text-stone-300 text-[11px] leading-relaxed">指定の管理者Googleアカウント以外はログインできません。</span>
+            </div>
+
+            <div class="pt-2 text-[10px] text-stone-500 italic">
+                Authorized Admin: kd1427178@st.kobedenshi.ac.jp Only
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-wrapper" class="hidden">
+        <header class="bg-charcoal-900 border-b border-gold-800/40 sticky top-0 z-50 backdrop-blur-md shadow-2xl">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl font-bold tracking-widest text-gold-500 font-serif">おうみや 管理パネル</span>
+                    <span class="text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">v3.0</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="/" target="_blank" class="text-xs text-stone-400 hover:text-gold-400 transition-all flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 本番サイト表示
+                    </a>
+                    <button onclick="handleLogout()" class="text-xs text-stone-400 hover:text-red-400 transition-all flex items-center gap-1 border border-stone-800 hover:border-red-500/30 px-3 py-1.5 rounded">
+                        <i class="fa-solid fa-power-off"></i> ログアウト
+                    </button>
+                    <button onclick="commitMasterDataToServer()" class="bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 text-charcoal-950 font-bold text-sm px-6 py-3 rounded-sm shadow-xl transition-all active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-base"></i> すべての変更を保存
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+
+            <section class="bg-charcoal-900 border border-gold-800/30 p-6 rounded-sm shadow-xl space-y-4">
+                <h3 class="text-sm font-bold text-gold-400 tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-pen-nib"></i> 全体アナウンス文章編集
+                </h3>
+                <div>
+                    <label class="block text-xs text-stone-400 mb-1.5">トップページ案内表示帯（一番上の流れる一言）</label>
+                    <input type="text" id="input-global-banner" class="w-full bg-charcoal-950 border border-gold-800/40 rounded px-3 py-2 text-sm text-stone-200 focus:outline-none focus:border-gold-400 transition-colors">
+                </div>
+            </section>
+
+            <div class="border-b border-gold-800/30 flex gap-1 overflow-x-auto whitespace-nowrap pb-1">
+                <button onclick="switchTab('menu')" id="tab-menu" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-stone-400 hover:text-stone-200 transition-all">名物料理図鑑管理</button>
+                <button onclick="switchTab('category')" id="tab-category" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-stone-400 hover:text-stone-200 transition-all">料理カテゴリ管理</button>
+                <button onclick="switchTab('gallery')" id="tab-gallery" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-stone-400 hover:text-stone-200 transition-all">空間ギャラリー管理</button>
+                <button onclick="switchTab('special')" id="tab-special" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-stone-400 hover:text-stone-200 transition-all">本日のイチオシ(枠)管理</button>
+            </div>
+
+            <div id="content-tab-menu" class="space-y-6">
+                <div class="flex justify-between items-center bg-charcoal-900/60 p-4 rounded border border-gold-800/20">
+                    <div>
+                        <h2 class="text-lg font-bold text-stone-200 font-serif">登録中のお料理一覧</h2>
+                        <p class="text-xs text-stone-400 mt-0.5">写真の追加変更、価格やカテゴリー分類の調整、表示順の並び替えを行えます。</p>
+                    </div>
+                    <button onclick="appendBlankMenuPlaceholder()" class="bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 border border-gold-500/40 text-xs font-bold px-4 py-2.5 rounded transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> 新規メニューを追加
+                    </button>
+                </div>
+                <div id="wrapper-menu-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <div id="content-tab-category" class="space-y-6 hidden">
+                <div class="flex justify-between items-center bg-charcoal-900/60 p-4 rounded border border-gold-800/20">
+                    <div>
+                        <h2 class="text-lg font-bold text-stone-200 font-serif">料理カテゴリの管理</h2>
+                        <p class="text-xs text-stone-400 mt-0.5">メニュー of 絞り込みボタン（タブ）として表示されるカテゴリの追加・編集・並び替えができます。</p>
+                    </div>
+                    <button onclick="appendCategoryPlaceholder()" class="bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 border border-gold-500/40 text-xs font-bold px-4 py-2.5 rounded transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-folder-plus"></i> 新規カテゴリを追加
+                    </button>
+                </div>
+                <div id="wrapper-category-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div id="content-tab-gallery" class="space-y-6 hidden">
+                <div class="flex justify-between items-center bg-charcoal-900/60 p-4 rounded border border-gold-800/20">
+                    <div>
+                        <h2 class="text-lg font-bold text-stone-200 font-serif">店内の空間写真ギャラリー管理</h2>
+                        <p class="text-xs text-stone-400 mt-0.5">トップページの写真ギャラリーセクションをリアルタイム管理します。</p>
+                    </div>
+                    <button onclick="appendBlankGalleryPlaceholder()" class="bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 border border-gold-500/40 text-xs font-bold px-4 py-2.5 rounded transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-camera-retro"></i> 新しいギャラリー写真を追加
+                    </button>
+                </div>
+                <div id="wrapper-gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+
+            <div id="content-tab-special" class="space-y-6 hidden">
+                <div class="bg-charcoal-900/60 p-4 rounded border border-gold-800/20">
+                    <h2 class="text-lg font-bold text-stone-200 font-serif">本日のイチオシ枠 編集</h2>
+                    <p class="text-xs text-stone-400 mt-0.5">トップページに大きく表示される「おすすめ」のテキストやアイテムを編集します。</p>
+                </div>
+                
+                <div class="bg-charcoal-900 border border-gold-800/30 p-6 rounded shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] text-stone-400 mb-1">バッジテキスト (左上)</label>
+                            <input type="text" id="sr-badge" oninput="syncSpecialValue('badge', this.value)" class="w-full bg-charcoal-950 border border-gold-800/40 rounded px-3 py-2 text-sm text-stone-200 focus:outline-none focus:border-gold-400">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-stone-400 mb-1">サブタイトル (英語推奨)</label>
+                            <input type="text" id="sr-subtitle" oninput="syncSpecialValue('subtitle', this.value)" class="w-full bg-charcoal-950 border border-gold-800/40 rounded px-3 py-2 text-sm text-stone-200 focus:outline-none focus:border-gold-400">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-stone-400 mb-1">メインタイトル</label>
+                            <input type="text" id="sr-title" oninput="syncSpecialValue('title', this.value)" class="w-full bg-charcoal-950 border border-gold-800/40 rounded px-3 py-2 text-sm text-stone-200 focus:outline-none focus:border-gold-400">
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] text-stone-400 mb-1">フッター情報 (営業時間など)</label>
+                            <input type="text" id="sr-footer-open" oninput="syncSpecialFooter('open', this.value)" class="w-full bg-charcoal-950 border border-gold-800/40 rounded px-3 py-2 text-sm text-stone-200 focus:outline-none focus:border-gold-400">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-stone-400 mb-1">フッター強調情報 (売切御免など)</label>
+                            <input type="text" id="sr-footer-extra" oninput="syncSpecialFooter('extra', this.value)" class="w-full bg-charcoal-950 border border-gold-800/40 rounded px-3 py-2 text-sm text-stone-200 focus:outline-none focus:border-gold-400">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <h3 class="text-md font-bold text-gold-400">表示するおすすめアイテム</h3>
+                    <button onclick="appendSpecialItemPlaceholder()" class="bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 border border-gold-500/40 text-xs font-bold px-4 py-2 rounded transition-all">
+                        + アイテム追加
+                    </button>
+                </div>
+                <div id="wrapper-special-items-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const ADMIN_EMAIL_WHITELIST = "kd1427178@st.kobedenshi.ac.jp";
+
+        let runtimeState = { 
+            topBannerText: "", 
+            categories: [],
+            specialRecommendation: { items: [], footer: {} }, 
+            galleryData: [], 
+            menuData: [] 
+        };
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyALHmPvFihzHkByaDnw9wy1OvFx5TZIuKM",
+            authDomain: "oumiya-a1fc6.firebaseapp.com",
+            projectId: "oumiya-a1fc6",
+            storageBucket: "oumiya-a1fc6.firebasestorage.app",
+            messagingSenderId: "1018264646242",
+            appId: "1:1018264646242:web:9edb54fdfd957c17a4573b",
+            measurementId: "G-NY07MY0F07"
+        };
+
+        let authObj = null;
+        let currentUserToken = null; // Store secure identity token in runtime memory context
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            authObj = getAuth(app);
+            
+            // Listen for changes in authentication status and refresh internal state variables
+            onAuthStateChanged(authObj, async (user) => {
+                if (user && user.email === ADMIN_EMAIL_WHITELIST) {
+                    currentUserToken = await user.getIdToken();
+                    sessionStorage.setItem('oumiya_admin_auth', 'true');
+                    checkLocalAuth();
+                } else {
+                    currentUserToken = null;
+                    sessionStorage.removeItem('oumiya_admin_auth');
+                    checkLocalAuth();
+                }
+            });
+        } catch (e) {
+            console.warn("Firebase Auth failed initialization. Using local fallback flow.", e);
+        }
+
+        // ==========================================
+        // AUTHENTICATION LOGIC
+        // ==========================================
+        window.checkLocalAuth = function() {
+            const isAuth = sessionStorage.getItem('oumiya_admin_auth');
+            const loginWall = document.getElementById('login-wall');
+            const dashboardWrapper = document.getElementById('dashboard-wrapper');
+
+            if (isAuth === 'true') {
+                loginWall.classList.add('hidden');
+                dashboardWrapper.classList.remove('hidden');
+                // Avoid invoking state initialization loop if token hasn't finished arriving yet
+                if (authObj && !currentUserToken) return;
+                initSystemState();
+            } else {
+                loginWall.classList.remove('hidden');
+                dashboardWrapper.classList.add('hidden');
+            }
+        }
+
+        window.handleGoogleLoginOnly = async function() {
+            const errorMsg = document.getElementById('auth-error-msg');
+            const errorTextSpan = document.getElementById('error-text-span');
+
+            if (authObj) {
+                const provider = new GoogleAuthProvider();
+                try {
+                    const result = await signInWithPopup(authObj, provider);
+                    const user = result.user;
+                    
+                    if (user) {
+                        if (user.email === ADMIN_EMAIL_WHITELIST) {
+                            currentUserToken = await user.getIdToken();
+                            sessionStorage.setItem('oumiya_admin_auth', 'true');
+                            errorMsg.classList.add('hidden');
+                            checkLocalAuth();
+                            showNotificationToast("管理者認証に成功しました。ようこそ、おうみや管理画面へ。");
+                        } else {
+                            await signOut(authObj);
+                            currentUserToken = null;
+                            sessionStorage.removeItem('oumiya_admin_auth');
+                            
+                            errorTextSpan.innerHTML = `アカウント制限エラー：<br><span class="text-stone-100">${user.email}</span> は管理者として登録されていません。認証アカウントを切り替えてください。`;
+                            errorMsg.classList.remove('hidden');
+                        }
+                    }
+                } catch (error) {
+                    console.error("Google Auth error details: ", error);
+                    errorTextSpan.innerText = "Google認証中にエラーが発生しました。時間を置いて再度お試しください。";
+                    errorMsg.classList.remove('hidden');
+                }
+            } else {
+                const selectMock = confirm("【ローカルテスト】Firebase設定が検出されませんでした。管理者アカウントとしてテストログインしますか？");
+                if (selectMock) {
+                    currentUserToken = "MOCK_DEVELOPMENT_TOKEN";
+                    sessionStorage.setItem('oumiya_admin_auth', 'true');
+                    errorMsg.classList.add('hidden');
+                    checkLocalAuth();
+                    showNotificationToast("テストログインに成功しました (デモモード)");
+                } else {
+                    errorTextSpan.innerText = "テスト用の模擬ログインがキャンセルされました。";
+                    errorMsg.classList.remove('hidden');
+                }
+            }
+        }
+
+        window.handleLogout = async function() {
+            sessionStorage.removeItem('oumiya_admin_auth');
+            currentUserToken = null;
+            if (authObj) {
+                try {
+                    await signOut(authObj);
+                } catch (e) {
+                    console.error("Signout error", e);
+                }
+            }
+            checkLocalAuth();
+        }
+
+        function showNotificationToast(message) {
+            const successToast = document.createElement('div');
+            successToast.className = "fixed bottom-5 right-5 z-50 bg-emerald-950 border border-emerald-500 text-stone-100 px-4 py-3 rounded text-sm shadow-xl flex items-center gap-2";
+            successToast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> ${message}`;
+            document.body.appendChild(successToast);
+            setTimeout(() => successToast.remove(), 5000);
+        }
+
+        // ==========================================
+        // SYSTEM INITIALIZATION
+        // ==========================================
+        async function initSystemState() {
+            try {
+                const response = await fetch('/api/site-data');
+                runtimeState = await response.json();
+                
+                document.getElementById('input-global-banner').value = runtimeState.topBannerText || "";
+                switchTab('menu');
+            } catch (err) {
+                const errorToast = document.createElement('div');
+                errorToast.className = "fixed bottom-5 right-5 z-50 bg-red-950 border border-red-500 text-stone-100 px-4 py-3 rounded text-sm shadow-xl flex items-center gap-2";
+                errorToast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500"></i> データの取得に失敗しました。サーバーの接続状態をご確認ください。`;
+                document.body.appendChild(errorToast);
+                setTimeout(() => errorToast.remove(), 6000);
+            }
+        }
+
+        window.switchTab = function(activeTab) {
+            ['menu', 'category', 'gallery', 'special'].forEach(tab => {
+                document.getElementById(`tab-${tab}`).className = "px-5 py-3 text-sm font-medium border-b-2 border-transparent text-stone-400 hover:text-stone-200 transition-all";
+                document.getElementById(`content-tab-${tab}`).classList.add('hidden');
+            });
+
+            document.getElementById(`tab-${activeTab}`).className = "px-5 py-3 text-sm font-medium border-b-2 custom-tab-active transition-all";
+            document.getElementById(`content-tab-${activeTab}`).classList.remove('hidden');
+
+            if (activeTab === 'menu') renderMenuAdministrationCards();
+            if (activeTab === 'category') renderCategoryAdministrationCards();
+            if (activeTab === 'gallery') renderGalleryAdministrationCards();
+            if (activeTab === 'special') renderSpecialAdministrationCards();
+        }
+
+        // ==========================================
+        // CATEGORY RENDER
+        // ==========================================
+        window.renderCategoryAdministrationCards = function() {
+            const container = document.getElementById('wrapper-category-grid');
+            container.innerHTML = "";
+
+            runtimeState.categories.forEach((item, index) => {
+                const nodeCard = document.createElement('div');
+                nodeCard.className = "bg-charcoal-900 border border-gold-800/30 rounded p-4 shadow-xl flex justify-between items-center hover:border-gold-500/60 transition-colors";
+                nodeCard.innerHTML = `
+                    <div class="flex-grow mr-4">
+                        <label class="block text-[10px] uppercase tracking-wider text-stone-400 mb-1">カテゴリ名表示 (Label)</label>
+                        <input type="text" value="${item.label}" oninput="syncCategoryValue(${index}, 'label', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-2.5 py-2 text-sm text-stone-200 focus:outline-none focus:border-gold-500">
+                        <p class="text-[9px] text-stone-500 mt-1">内部ID: ${item.key}</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2 border-l border-gold-800/20 pl-4">
+                        <div class="flex items-center gap-1">
+                            <button onclick="shiftArrayOrder('category', ${index}, -1)" class="w-8 h-8 bg-charcoal-950 border border-gold-800/30 hover:border-gold-500 rounded text-stone-400 hover:text-gold-400 flex items-center justify-center transition-colors"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button onclick="shiftArrayOrder('category', ${index}, 1)" class="w-8 h-8 bg-charcoal-950 border border-gold-800/30 hover:border-gold-500 rounded text-stone-400 hover:text-gold-400 flex items-center justify-center transition-colors"><i class="fa-solid fa-arrow-down"></i></button>
+                        </div>
+                        <button onclick="removeDataEntry('category', ${index})" class="text-xs text-red-400 hover:text-red-300 transition-colors"><i class="fa-regular fa-trash-can"></i> 削除</button>
+                    </div>
+                `;
+                container.appendChild(nodeCard);
+            });
+        }
+
+        window.appendCategoryPlaceholder = function() {
+            runtimeState.categories.push({
+                key: 'cat_' + Date.now(),
+                label: '新規カテゴリ'
+            });
+            renderCategoryAdministrationCards();
+            renderMenuAdministrationCards(); 
+        }
+
+        window.syncCategoryValue = function(idx, key, val) { 
+            runtimeState.categories[idx][key] = val; 
+            renderMenuAdministrationCards(); 
+        }
+
+        // ==========================================
+        // MENU RENDER
+        // ==========================================
+        window.renderMenuAdministrationCards = function() {
+            const container = document.getElementById('wrapper-menu-grid');
+            container.innerHTML = "";
+
+            runtimeState.menuData.forEach((item, index) => {
+                const nodeCard = document.createElement('div');
+                nodeCard.className = "bg-charcoal-900 border border-gold-800/30 rounded p-4 flex flex-col justify-between space-y-4 shadow-xl hover:border-gold-500/60 transition-colors";
+                
+                let categoryOptions = runtimeState.categories.map(c => 
+                    `<option value="${c.key}" ${item.category === c.key ? 'selected' : ''}>${c.label}</option>`
+                ).join('');
+
+                nodeCard.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="relative aspect-[4/3] bg-charcoal-950 border border-gold-800/20 rounded overflow-hidden group flex items-center justify-center">
+                            <img src="${item.image || ''}" id="preview-menu-img-${index}" class="w-full h-full object-cover">
+                            <label class="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-200">
+                                <i class="fa-solid fa-cloud-arrow-up text-xl text-gold-400 mb-1"></i>
+                                <span class="text-xs text-stone-200">新しい写真をアップロード</span>
+                                <input type="file" accept="image/*" class="hidden" onchange="executeImageUploadPipeline(this, 'menu', ${index})">
+                            </label>
+                        </div>
+                        <div class="space-y-2">
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-stone-400">料理名・写真タイトル</label>
+                                <input type="text" value="${item.name || ''}" oninput="syncMenuValue(${index}, 'name', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-2.5 py-1 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] uppercase tracking-wider text-stone-400">表示価格 (数値)</label>
+                                    <input type="text" value="${item.price || ''}" oninput="syncMenuValue(${index}, 'price', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-2.5 py-1 text-xs text-stone-200 focus:outline-none focus:border-gold-500 font-mono font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] uppercase tracking-wider text-stone-400">表示カテゴリー</label>
+                                    <select onchange="syncMenuValue(${index}, 'category', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-2.5 py-1 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
+                                        ${categoryOptions}
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-stone-400">料理の説明文</label>
+                                <textarea rows="2" oninput="syncMenuValue(${index}, 'desc', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-2.5 py-1 text-xs text-stone-300 focus:outline-none focus:border-gold-500 resize-none">${item.desc || ''}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-gold-800/20 pt-3">
+                        <div class="flex items-center gap-1">
+                            <button onclick="shiftArrayOrder('menu', ${index}, -1)" class="w-7 h-7 bg-charcoal-950 border border-gold-800/30 hover:border-gold-500 rounded text-stone-400 hover:text-gold-400 text-xs flex items-center justify-center transition-colors"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="shiftArrayOrder('menu', ${index}, 1)" class="w-7 h-7 bg-charcoal-950 border border-gold-800/30 hover:border-gold-500 rounded text-stone-400 hover:text-gold-400 text-xs flex items-center justify-center transition-colors"><i class="fa-solid fa-chevron-right"></i></button>
+                            <span class="text-[10px] text-stone-500 font-mono pl-1">表示順序: ${index+1}</span>
+                        </div>
+                        <button onclick="removeDataEntry('menu', ${index})" class="text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 px-2 py-1 rounded transition-colors flex items-center gap-1"><i class="fa-regular fa-trash-can"></i> 削除</button>
+                    </div>
+                `;
+                container.appendChild(nodeCard);
+            });
+        }
+
+        window.appendBlankMenuPlaceholder = function() {
+            runtimeState.menuData.unshift({
+                id: 'menu_' + Date.now(),
+                category: runtimeState.categories.length > 0 ? runtimeState.categories[0].key : '',
+                name: '新メニュー',
+                image: '',
+                price: '500',
+                desc: '説明文を入力してください。'
+            });
+            renderMenuAdministrationCards();
+        }
+
+        window.syncMenuValue = function(idx, key, val) { runtimeState.menuData[idx][key] = val; }
+
+        // ==========================================
+        // GALLERY RENDER
+        // ==========================================
+        window.renderGalleryAdministrationCards = function() {
+            const container = document.getElementById('wrapper-gallery-grid');
+            container.innerHTML = "";
+
+            runtimeState.galleryData.forEach((item, index) => {
+                const nodeCard = document.createElement('div');
+                nodeCard.className = "bg-charcoal-900 border border-gold-800/30 rounded p-4 flex flex-col justify-between space-y-4 shadow-xl";
+                nodeCard.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="relative aspect-[16/10] bg-charcoal-950 border border-gold-800/20 rounded overflow-hidden group flex items-center justify-center">
+                            <img src="${item.image || ''}" id="preview-gallery-img-${index}" class="w-full h-full object-cover">
+                            <label class="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-200">
+                                <i class="fa-solid fa-camera text-xl text-gold-400 mb-1"></i>
+                                <span class="text-xs text-stone-200">新しい写真をアップロード</span>
+                                <input type="file" accept="image/*" class="hidden" onchange="executeImageUploadPipeline(this, 'gallery', ${index})">
+                            </label>
+                        </div>
+                        <div class="space-y-2">
+                            <div>
+                                <label class="block text-[10px] text-stone-400">画像タイトル (ホバー表示用)</label>
+                                <input type="text" value="${item.title || ''}" oninput="syncGalleryValue(${index}, 'title', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-2.5 py-1 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-stone-400">代替タグ (alt)</label>
+                                <input type="text" value="${item.alt || ''}" oninput="syncGalleryValue(${index}, 'alt', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-2.5 py-1 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-gold-800/20 pt-3">
+                        <div class="flex items-center gap-1">
+                            <button onclick="shiftArrayOrder('gallery', ${index}, -1)" class="w-7 h-7 bg-charcoal-950 border border-gold-800/30 hover:border-gold-500 rounded text-stone-400 hover:text-gold-400 text-xs flex items-center justify-center transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
+                            <button onclick="shiftArrayOrder('gallery', ${index}, 1)" class="w-7 h-7 bg-charcoal-950 border border-gold-800/30 hover:border-gold-500 rounded text-stone-400 hover:text-gold-400 text-xs flex items-center justify-center transition-colors"><i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                        <button onclick="removeDataEntry('gallery', ${index})" class="text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 px-2 py-1 rounded transition-colors flex items-center gap-1"><i class="fa-regular fa-trash-can"></i> 削除</button>
+                    </div>
+                `;
+                container.appendChild(nodeCard);
+            });
+        }
+
+        window.appendBlankGalleryPlaceholder = function() {
+            runtimeState.galleryData.unshift({
+                image: '',
+                alt: '新しい店内写真',
+                title: '新しい写真'
+            });
+            renderGalleryAdministrationCards();
+        }
+
+        window.syncGalleryValue = function(idx, key, val) { runtimeState.galleryData[idx][key] = val; }
+
+        // ==========================================
+        // SPECIAL RECOMMENDATION RENDER
+        // ==========================================
+        window.renderSpecialAdministrationCards = function() {
+            const sr = runtimeState.specialRecommendation;
+            document.getElementById('sr-badge').value = sr.badge || '';
+            document.getElementById('sr-subtitle').value = sr.subtitle || '';
+            document.getElementById('sr-title').value = sr.title || '';
+            document.getElementById('sr-footer-open').value = sr.footer.open || '';
+            document.getElementById('sr-footer-extra').value = sr.footer.extra || '';
+
+            const container = document.getElementById('wrapper-special-items-grid');
+            container.innerHTML = "";
+
+            sr.items.forEach((item, index) => {
+                const nodeCard = document.createElement('div');
+                nodeCard.className = "bg-charcoal-900 border border-gold-800/30 rounded p-4 flex gap-4 shadow-xl";
+                nodeCard.innerHTML = `
+                    <div class="w-24 shrink-0 flex flex-col gap-2">
+                        <div class="relative w-full aspect-square bg-charcoal-950 border border-gold-800/20 rounded overflow-hidden group flex items-center justify-center">
+                            ${item.image ? `<img src="${item.image}" id="preview-special-img-${index}" class="w-full h-full object-cover">` : `<span class="text-gold-600 text-2xl"><i class="${item.icon || 'fa-solid fa-image'}"></i></span>`}
+                            <label class="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-200">
+                                <span class="text-[10px] text-stone-200">画像変更</span>
+                                <input type="file" accept="image/*" class="hidden" onchange="executeImageUploadPipeline(this, 'special', ${index})">
+                            </label>
+                        </div>
+                        <input type="text" placeholder="アイコン(fa-solid fa-x)" value="${item.icon || ''}" oninput="syncSpecialItemValue(${index}, 'icon', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-1.5 py-1 text-[9px] text-stone-200 focus:outline-none">
+                    </div>
+                    <div class="flex-grow space-y-2">
+                        <div>
+                            <label class="block text-[10px] text-stone-400">小見出し (カテゴリ)</label>
+                            <input type="text" value="${item.category || ''}" oninput="syncSpecialItemValue(${index}, 'category', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-2.5 py-1 text-xs text-stone-200 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-stone-400">アイテム名</label>
+                            <input type="text" value="${item.name || ''}" oninput="syncSpecialItemValue(${index}, 'name', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-2.5 py-1 text-xs text-stone-200 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-stone-400">短文説明</label>
+                            <input type="text" value="${item.description || ''}" oninput="syncSpecialItemValue(${index}, 'description', this.value)" class="w-full bg-charcoal-950 border border-gold-800/30 rounded px-2.5 py-1 text-xs text-stone-200 focus:outline-none">
+                        </div>
+                        <div class="flex justify-between items-center mt-2 pt-2 border-t border-gold-800/20">
+                            <div class="flex gap-1">
+                                <button onclick="shiftArrayOrder('special', ${index}, -1)" class="px-2 py-1 bg-charcoal-950 border border-gold-800/30 rounded text-stone-400 hover:text-gold-400 text-xs"><i class="fa-solid fa-arrow-up"></i></button>
+                                <button onclick="shiftArrayOrder('special', ${index}, 1)" class="px-2 py-1 bg-charcoal-950 border border-gold-800/30 rounded text-stone-400 hover:text-gold-400 text-xs"><i class="fa-solid fa-arrow-down"></i></button>
+                            </div>
+                            <button onclick="removeDataEntry('special', ${index})" class="text-xs text-red-400 hover:text-red-300">削除</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(nodeCard);
+            });
+        }
+
+        window.appendSpecialItemPlaceholder = function() {
+            runtimeState.specialRecommendation.items.push({
+                category: "新規分類",
+                name: "新規アイテム",
+                description: "説明文を入力",
+                image: "",
+                icon: "fa-solid fa-star"
+            });
+            renderSpecialAdministrationCards();
+        }
+
+        window.syncSpecialValue = function(key, val) { runtimeState.specialRecommendation[key] = val; }
+        window.syncSpecialFooter = function(key, val) { runtimeState.specialRecommendation.footer[key] = val; }
+        window.syncSpecialItemValue = function(idx, key, val) { runtimeState.specialRecommendation.items[idx][key] = val; }
+
+        // ==========================================
+        // SHARED UTILS
+        // ==========================================
+        window.removeDataEntry = function(type, index) {
+            const proceed = confirm("このアイテムを完全に削除してもよろしいですか？");
+            if (proceed) {
+                if (type === 'menu') { runtimeState.menuData.splice(index, 1); renderMenuAdministrationCards(); }
+                if (type === 'category') { runtimeState.categories.splice(index, 1); renderCategoryAdministrationCards(); }
+                if (type === 'gallery') { runtimeState.galleryData.splice(index, 1); renderGalleryAdministrationCards(); }
+                if (type === 'special') { runtimeState.specialRecommendation.items.splice(index, 1); renderSpecialAdministrationCards(); }
+            }
+        }
+
+        window.shiftArrayOrder = function(type, currIdx, relativeStep) {
+            let targetArray = [];
+            if (type === 'menu') targetArray = runtimeState.menuData;
+            if (type === 'category') targetArray = runtimeState.categories;
+            if (type === 'gallery') targetArray = runtimeState.galleryData;
+            if (type === 'special') targetArray = runtimeState.specialRecommendation.items;
+
+            const targetIdx = currIdx + relativeStep;
+            if (targetIdx < 0 || targetIdx >= targetArray.length) return;
+
+            const proxy = targetArray[currIdx];
+            targetArray[currIdx] = targetArray[targetIdx];
+            targetArray[targetIdx] = proxy;
+
+            if (type === 'menu') renderMenuAdministrationCards();
+            if (type === 'category') renderCategoryAdministrationCards();
+            if (type === 'gallery') renderGalleryAdministrationCards();
+            if (type === 'special') renderSpecialAdministrationCards();
+        }
+
+        window.executeImageUploadPipeline = async function(inputNode, type, index) {
+            const targetFile = inputNode.files[0];
+            if (!targetFile) return;
+
+            const containerFormData = new FormData();
+            containerFormData.append('image', targetFile); 
+
+            try {
+                // Attach user's Identity Token inside Authorization headers
+                const response = await fetch('/api/upload', { 
+                    method: 'POST', 
+                    headers: {
+                        'Authorization': currentUserToken ? `Bearer ${currentUserToken}` : ''
+                    },
+                    body: containerFormData 
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (type === 'menu') {
+                        runtimeState.menuData[index].image = data.path;
+                        renderMenuAdministrationCards();
+                    } else if (type === 'gallery') {
+                        runtimeState.galleryData[index].image = data.path;
+                        renderGalleryAdministrationCards();
+                    } else if (type === 'special') {
+                        runtimeState.specialRecommendation.items[index].image = data.path;
+                        renderSpecialAdministrationCards();
+                    }
+                } else {
+                    const errorToast = document.createElement('div');
+                    errorToast.className = "fixed bottom-5 right-5 z-50 bg-red-950 border border-red-500 text-stone-100 px-4 py-3 rounded text-sm shadow-xl flex items-center gap-2";
+                    errorToast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500"></i> アップロード失敗しました: ${data.message}`;
+                    document.body.appendChild(errorToast);
+                    setTimeout(() => errorToast.remove(), 6000);
+                }
+            } catch (err) {
+                const errorToast = document.createElement('div');
+                errorToast.className = "fixed bottom-5 right-5 z-50 bg-red-950 border border-red-500 text-stone-100 px-4 py-3 rounded text-sm shadow-xl flex items-center gap-2";
+                errorToast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500"></i> 画像サーバーへの通信エラーが発生しました。`;
+                document.body.appendChild(errorToast);
+                setTimeout(() => errorToast.remove(), 6000);
+            }
+        }
+
+        window.commitMasterDataToServer = async function() {
+            runtimeState.topBannerText = document.getElementById('input-global-banner').value;
+
+            try {
+                // Attach user's Identity Token inside Authorization headers
+                const response = await fetch('/api/site-data', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': currentUserToken ? `Bearer ${currentUserToken}` : ''
+                    },
+                    body: JSON.stringify(runtimeState)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showNotificationToast(result.message);
+                    initSystemState();
+                } else {
+                    alert(`保存エラー: ${result.message}`);
+                }
+            } catch (err) {
+                const errorToast = document.createElement('div');
+                errorToast.className = "fixed bottom-5 right-5 z-50 bg-red-950 border border-red-500 text-stone-100 px-4 py-3 rounded text-sm shadow-xl flex items-center gap-2";
+                errorToast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500"></i> サーバーの更新処理中にエラーが発生しました。`;
+                document.body.appendChild(errorToast);
+                setTimeout(() => errorToast.remove(), 6000);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', checkLocalAuth);
+    </script>
+</body>
+</html>

@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>居酒屋 おうみや | 三宮駅1分・明石だこと旨い酒</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            50: '#fdfbf7',
+                            100: '#fbe9d0',
+                            200: '#f7d2a1',
+                            300: '#f2b56c',
+                            400: '#ec9b42',
+                            500: '#c5812b',
+                            600: '#a36720',
+                            700: '#824e18',
+                            800: '#613711',
+                            900: '#46250a',
+                        },
+                        charcoal: {
+                            800: '#1c1917',
+                            900: '#0f0d0c',
+                            950: '#070605'
+                        }
+                    },
+                    fontFamily: {
+                        mincho: ['"Shippori Mincho"', 'serif'],
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f0d0c; }
+        ::-webkit-scrollbar-thumb { background: #c5812b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ec9b42; }
+
+        .seigaiha-bg {
+            background-color: #0f0d0c;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cpath fill='%23221c16' fill-opacity='0.15' d='M0 0h120v60H0z'/%3E%3Cg fill='none' stroke='%23382c20' stroke-width='1'%3E%3Cpath d='M60 0c-15 0-25 10-25 25s10 25 25 25 25-10 25-25S75 0 60 0zm0 5c12 0 20 8 20 20s-8 20-20 20-20-8-20-20 8-20 20-20zm0 5c9 0 15 6 15 15s-6 15-15 15-15-6-15-15 6-15 15-15zm0 5c6 0 10 4 10 10s-4 10-10 10-10-4-10-10 4-10 10-10zm0 5c3 0 5 2 5 5s-2 5-5 5-5-2-5-5 2-5 5-5z'/%3E%3Cpath d='M0 30c-15 0-25 10-25 25s10 25 25 25 25-10 25-25S15 30 0 30zm0 5c12 0 20 8 20 20s-8 20-20 20-20-8-20-20 8-20 20-20zm0 5c9 0 15 6 15 15s-6 15-15 15-15-6-15-15 6-15 15-15zm0 5c6 0 10 4 10 10s-4 10-10 10-10-4-10-10 4-10 10-10zm0 5c3 0 5 2 5 5s-2 5-5 5-5-2-5-5 2-5 5-5z'/%3E%3Cpath d='M120 30c-15 0-25 10-25 25s10 25 25 25 25-10 25-25S135 30 120 30zm0 5c12 0 20 8 20 20s-8 20-20 20-20-8-20-20 8-20 20-20zm0 5c9 0 15 6 15 15s-6 15-15 15-15-6-15-15 6-15 15-15zm0 5c6 0 10 4 10 10s-4 10-10 10-10-4-10-10 4-10 10-10zm0 5c3 0 5 2 5 5s-2 5-5 5-5-2-5-5 2-5 5-5z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .brush-gold-underline { position: relative; }
+        .brush-gold-underline::after {
+            content: '';
+            position: absolute;
+            left: 5%;
+            bottom: -8px;
+            width: 90%;
+            height: 6px;
+            background: radial-gradient(ellipse at center, #c5812b 0%, rgba(197, 129, 43, 0) 80%);
+            border-radius: 50%;
+        }
+
+        .writing-vertical {
+            writing-mode: vertical-rl;
+            text-combine-upright: all;
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 0 15px rgba(247, 210, 161, 0.4);
+            border-color: #f7d2a1;
+        }
+    </style>
+</head>
+<body class="bg-charcoal-950 text-stone-100 font-sans antialiased selection:bg-gold-500 selection:text-charcoal-950">
+
+    <div class="bg-charcoal-900 border-b border-gold-800/40 text-xs py-2 px-4 text-center sm:text-left z-50 relative">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <span id="top-banner-text" class="text-stone-400 font-light flex items-center gap-1.5">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            </span>
+            <div class="flex items-center gap-4 text-gold-300">
+                <a href="tel:0782213115" class="hover:text-gold-200 transition-colors duration-200 font-medium">
+                    <i class="fa-solid fa-phone mr-1"></i> 078-221-2254
+                </a>
+                <span class="text-gold-800">|</span>
+                <span class="text-stone-400">JR三ノ宮駅 徒歩1分</span>
+            </div>
+        </div>
+    </div>
+
+    <header class="sticky top-0 z-40 bg-charcoal-950/90 backdrop-blur-md border-b border-gold-700/30 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <span class="font-mincho text-3xl sm:text-4xl font-extrabold tracking-widest text-gold-500 flex flex-col leading-tight select-none">おうみや</span>
+                        <span class="absolute -top-1.5 -right-3 text-[10px] bg-gold-600 text-charcoal-950 font-bold px-1 rounded transform rotate-12">三宮</span>
+                    </div>
+                    <div class="hidden md:block h-8 w-[1px] bg-gold-800/50 mx-2"></div>
+                    <p class="hidden md:block text-xs text-stone-400 font-light leading-snug">
+                        創業から愛される<br>昔ながらの大衆居酒屋
+                    </p>
+                </div>
+
+                <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-stone-300">
+                    <a href="#concept" class="hover:text-gold-400 transition-colors duration-200 py-2">当店について</a>
+                    <a href="#gallery" class="hover:text-gold-400 transition-colors duration-200 py-2">写真・空間</a>
+                    <a href="#menu-explorer" class="hover:text-gold-400 transition-colors duration-200 py-2">名物料理図鑑</a>
+                    <a href="#interactive-map" class="hover:text-gold-400 transition-colors duration-200 py-2">店内のご案内</a>
+                    <a href="#access" class="hover:text-gold-400 transition-colors duration-200 py-2">店舗アクセス</a>
+                </nav>
+
+                <div class="flex items-center gap-3">
+                    <a href="https://tabelog.com/en/hyogo/A2801/A280101/28002868/" target="_blank" rel="noopener noreferrer" class="bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 text-charcoal-950 font-bold text-xs sm:text-sm px-4 sm:px-6 py-2.5 rounded-sm transition-all duration-300 transform hover:scale-[1.03] shadow-lg shadow-gold-700/20 tracking-wider">
+                        <i class="fa-regular fa-calendar-check mr-1.5"></i> ご席予約
+                    </a>
+                    <button id="mobileMenuBtn" class="lg:hidden text-stone-300 hover:text-gold-400 p-2 text-xl focus:outline-none">
+                        <i class="fa-solid fa-bars-staggered"></i>
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+        <div class="image-container">
+    
+</div>
+
+
+
+        <div id="mobileMenu" class="hidden lg:hidden border-t border-gold-800/40 bg-charcoal-900 px-4 py-6 space-y-4">
+            <a href="#concept" class="block text-stone-300 hover:text-gold-400 py-1" onclick="toggleMobileMenu()">当店について</a>
+            <a href="#gallery" class="block text-stone-300 hover:text-gold-400 py-1" onclick="toggleMobileMenu()">写真・空間</a>
+            <a href="#menu-explorer" class="block text-stone-300 hover:text-gold-400 py-1" onclick="toggleMobileMenu()">名物料理図鑑</a>
+            <a href="#interactive-map" class="block text-stone-300 hover:text-gold-400 py-1" onclick="toggleMobileMenu()">店内のご案内</a>
+            <a href="https://tabelog.com/en/hyogo/A2801/A280101/28002868/" target="_blank" rel="noopener noreferrer" class="block text-stone-300 hover:text-gold-400 py-1" onclick="toggleMobileMenu()">ご席予約</a>
+            <a href="#access" class="block text-stone-300 hover:text-gold-400 py-1" onclick="toggleMobileMenu()">店舗アクセス</a>
+        </div>
+    </header>
+
+<section class="py-10 seigaiha-bg relative overflow-hidden">
+
+    <div class="relative z-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+
+        <!-- Image -->
+        <div class="lg:col-span-5 flex justify-center items-center">
+            <img 
+                src="pp.png" 
+                alt="Photo"
+                class="w-full max-w-xl lg:max-w-2xl h-auto object-contain mx-auto"
+            >
+        </div>
+
+        <!-- Text -->
+        <div class="lg:col-span-7 space-y-4 text-center lg:text-center flex flex-col items-center">
+
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-gold-950/60 border border-gold-800/60 rounded-full text-gold-300 text-xs sm:text-sm tracking-widest font-medium">
+                <span class="inline-block w-2 h-2 rounded-full bg-gold-500 animate-ping"></span>
+                三ノ宮駅前高架下・昭和レトロな隠れ家
+            </div>
+
+            <h1 class="　text-gold-400　font-mincho text-3xl sm:text-4xl lg:text-5xl font-extrabold text-stone-50 leading-tight tracking-wide">
+                ご家族での食事から<br>
+                <span class="text-gold-400">大賑わいの宴会まで</span>
+            </h1>
+
+            <p class="text--400 text-base sm:text-lg max-w-2xl leading-relaxed">
+                近海よりその日の朝に水揚げされる「活だこ」や新鮮なお造りをその場で。
+                創業当初から継ぎ足した伝統の出汁、
+                職人が一本ずつ揚げる串カツを、
+                グッと冷えた生ビールとともに。
+            </p>
+
+            <!-- Buttons -->
+            <div class="flex flex-wrap justify-center items-center gap-3 pt-2">
+
+                <a href="https://tabelog.com/en/hyogo/A2801/A280101/28002868/"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="px-6 py-3 bg-gradient-to-r from-gold-600 to-gold-500 text-charcoal-950 font-bold rounded-sm transition-all duration-300">
+                    食べログでネット予約する
+                </a>
+
+                <a href="#menu-explorer"
+                   class="px-6 py-3 border border-gold-700 hover:bg-gold-500/10 text-gold-300 font-medium rounded-sm transition-all duration-300">
+                    お品書きを見る
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+    <section id="concept" class="py-24 seigaiha-bg relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 flex justify-center items-center gap-8 py-4">
+                    <div class="flex flex-col items-center">
+                        <div class="writing-vertical font-mincho font-extrabold text-3xl sm:text-5xl text-stone-100 tracking-widest leading-none bg-gradient-to-b from-stone-50 via-stone-200 to-gold-400/90 py-4 px-2 select-none">
+                            旨い鮮魚と
+                        </div>
+                    </div>
+                    <div class="w-64 sm:w-80 h-[420px] overflow-hidden rounded-2xl shadow-2xl border-4 border-black">
+                        <img src="IMG_0156_0.JPG" alt="料理画像" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex flex-col items-center pt-16">
+                        <div class="writing-vertical font-mincho font-extrabold text-3xl sm:text-5xl text-gold-500 tracking-widest leading-none py-4 px-2 select-none">
+                            旨い酒
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="space-y-2">
+                        <p class="text-gold-500 text-xs sm:text-sm font-bold uppercase tracking-widest">About Our Culinary Style</p>
+                        <h2 class="font-mincho text-2xl sm:text-3xl font-extrabold text-stone-100 brush-gold-underline inline-block">近海の恵みを、その日のうちに。</h2>
+                    </div>
+                    <p class="text-stone-300 font-light leading-relaxed text-sm sm:text-base pt-4">
+                        当店の自慢はなんと言っても毎日仕入れる「活たこ」。急流に揉まれ引き締まったその身は驚くほどの弾力と深い旨みを誇ります。毎朝当店にて活〆をして、活きならではの噛めば噛むほど広がる上品な甘みをご堪能ください。
+                    </p>
+                    <p class="text-stone-300 font-light leading-relaxed text-sm sm:text-base">
+                        また、一本ずつ真心を込めて衣をまぶし、最高温度の油でカラッと揚げる「串カツ（各種100円～）」や、伝統の澄んだお出汁でじっくり時間をかけて煮込んだ「名物おでん」など、何杯でもお酒がすすむ王道おつまみを豊富に取り揃えております。
+                    </p>
+                    <p class="text-stone-300 font-light leading-relaxed text-sm sm:text-base">
+                        お一人でふらりと仕事帰りにカウンターへ、あるいはご友人と会社の大人数でのご宴会など、どんなシーンでも温かく落ち着く時間を提供することをお約束いたします。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="py-20 bg-charcoal-950 border-t border-gold-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center space-y-3 mb-12">
+                <span class="text-xs text-gold-500 font-bold uppercase tracking-widest">Atmosphere & Cuisine</span>
+                <h2 class="font-mincho text-3xl sm:text-4xl font-extrabold text-stone-100">写真ギャラリー・空間</h2>
+                <p class="text-stone-400 text-sm max-w-lg mx-auto font-light">こだわりのインテリアと、活気あふれる店内の様子をご覧ください。</p>
+            </div>
+            <div id="server-gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[250px]">
+            </div>
+        </div>
+    </section>
+
+    <section id="menu-explorer" class="py-24 bg-charcoal-900 border-t border-b border-gold-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center space-y-3 mb-12">
+                <span class="text-xs text-gold-500 font-bold uppercase tracking-widest">Gourmet Photo Library</span>
+                <h2 class="font-mincho text-3xl sm:text-4xl font-extrabold text-stone-100">おうみや名物料理</h2>
+                <p class="text-stone-400 text-sm max-w-lg mx-auto font-light">
+                    当店が絶対の自信をもってお届けする絶品料理の数々。写真をクリックすると大きく表示されます。
+                </p>
+            </div>
+            <div id="filter-buttons" class="flex flex-wrap justify-center gap-3 mb-10"></div>
+            <div id="ryouri-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        </div>
+    </section>
+
+    <div id="lightbox-modal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex flex-col justify-center items-center p-4">
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-stone-400 hover:text-gold-400 text-3xl focus:outline-none transition-colors">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="max-w-4xl w-full flex flex-col items-center">
+            <img id="lightbox-image" src="" alt="拡大画像" class="max-h-[70vh] w-auto object-contain rounded border border-gold-900/30 shadow-2xl">
+            <div class="mt-4 text-center max-w-xl">
+                <span id="lightbox-tag" class="inline-block bg-gold-950 text-gold-400 border border-gold-900 text-[10px] font-bold px-2 py-0.5 rounded mb-2"></span>
+                <h4 id="lightbox-title" class="font-mincho text-xl font-bold text-stone-100"></h4>
+                <p id="lightbox-desc" class="text-xs sm:text-sm text-stone-400 mt-2 font-light leading-relaxed"></p>
+                <p id="lightbox-price" class="text-gold-400 font-bold text-lg mt-1 font-mono"></p>
+            </div>
+        </div>
+    </div>
+
+    <section id="interactive-map" class="py-24 seigaiha-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center space-y-3 mb-16">
+                <span class="text-xs text-gold-500 font-bold uppercase tracking-widest">Store Layout & Space</span>
+                <h2 class="font-mincho text-3xl sm:text-4xl font-extrabold text-stone-100">広々とした店内</h2>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                <div class="lg:col-span-7 bg-charcoal-950 border border-gold-800/40 p-6 sm:p-8 rounded relative shadow-2xl">
+                    <div class="absolute top-4 left-4 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-gold-500"></span>
+                        <span class="text-xs text-stone-400 font-medium">店内平面図 (エリアをクリックでプレビュー)</span>
+                    </div>
+
+                    <div class="mt-8 relative aspect-[4/3] w-full border border-gold-900/60 rounded bg-charcoal-900 overflow-hidden flex flex-col justify-between">
+                        <div class="absolute inset-0 grid grid-cols-6 grid-rows-4 gap-2 p-4">
+                            <!-- Counter Seat -->
+<div onclick="highlightSeat('counter')" 
+     id="map-counter" 
+     class="col-span-2 row-span-2 relative overflow-hidden bg-charcoal-800/80 hover:bg-gold-900/30 border border-gold-800/60 hover:border-gold-400 cursor-pointer rounded flex flex-col items-center justify-center transition-all duration-300 p-2 group shadow-lg">
+
+    <img src="12a15f5e-3e3e-4918-8cdb-edf45d6efda4.jpg" 
+         alt="カウンター席"
+         class="absolute inset-0 w-full h-full object-cover opacity-50">
+
+    <div class="relative z-10 flex flex-col items-center justify-center">
+        <span class="text-gold-400 text-lg group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-chair"></i>
+        </span>
+
+        <span class="font-bold text-stone-100 text-xs sm:text-sm mt-1">
+            カウンター席
+        </span>
+    </div>
+
+</div>
+
+<!-- Tatami -->
+<div onclick="highlightSeat('tatami')" 
+     id="map-tatami" 
+     class="col-span-4 row-span-2 relative overflow-hidden bg-charcoal-800/80 hover:bg-gold-900/30 border border-gold-800/60 hover:border-gold-400 cursor-pointer rounded flex flex-col items-center justify-center transition-all duration-300 p-2 group">
+
+    <img src="4259a0ad-ca88-422b-a6e7-c82e49229997.jpg" 
+         alt="お座敷"
+         class="absolute inset-0 w-full h-full object-cover opacity-50">
+
+    <div class="relative z-10 flex flex-col items-center justify-center">
+        <span class="text-gold-400 text-lg group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-border-all"></i>
+        </span>
+
+        <span class="font-bold text-stone-100 text-xs sm:text-sm mt-1">
+            お座敷
+        </span>
+    </div>
+
+</div>
+
+<!-- Table Seat -->
+<div onclick="highlightSeat('table')" 
+     id="map-table" 
+     class="col-span-3 row-span-2 relative overflow-hidden bg-charcoal-800/80 hover:bg-gold-900/30 border border-gold-800/60 hover:border-gold-400 cursor-pointer rounded flex flex-col items-center justify-center transition-all duration-300 p-2 group">
+
+    <img src="767d796f-8b61-40bd-8b55-9f7a991a3569.jpg" 
+         alt="テーブル席"
+         class="absolute inset-0 w-full h-full object-cover opacity-50">
+
+    <div class="relative z-10 flex flex-col items-center justify-center">
+        <span class="text-gold-400 text-lg group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-table-cells"></i>
+        </span>
+
+        <span class="font-bold text-stone-100 text-xs sm:text-sm mt-1">
+            テーブル席
+        </span>
+    </div>
+
+</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-5 bg-charcoal-900 border border-gold-700/40 p-6 rounded relative shadow-2xl space-y-4">
+                    <div class="grid grid-cols-2 gap-2 w-full h-48 bg-charcoal-950 rounded overflow-hidden mb-4 border border-gold-900/50 relative">
+
+    
+
+    <!-- Photo 2 -->
+    <div class="overflow-hidden">
+        <img 
+            src="Image_20260528_094225_830.jpeg"
+            alt="Seat Preview 2"
+            class="w-full h-full object-cover"
+        >
+    </div>
+    <div class="overflow-hidden">
+        <img 
+            src="4259a0ad-ca88-422b-a6e7-c82e49229997.jpg"
+            alt="Seat Preview 1"
+            class="w-full h-full object-cover"
+        >
+    </div>
+
+    <!-- Badge -->
+    <span 
+        id="seat-preview-badge" 
+        class="absolute top-2 left-2 bg-gold-600 text-charcoal-950 text-[10px] font-bold px-2 py-1 rounded-sm shadow"
+    >
+    </span>
+
+</div>
+                    <div>
+                        <h4 id="seat-preview-title" class="font-mincho text-xl font-bold text-stone-100"></h4>
+                        <p id="seat-preview-subtitle" class="text-xs text-gold-400 font-medium mt-1"></p>
+                    </div>
+                    <p id="seat-preview-desc" class="text-sm text-stone-300 font-light leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+ <section id="access" class="py-24 bg-charcoal-900 border-t border-gold-800/30">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+
+            <!-- LEFT -->
+            <div class="lg:col-span-5 space-y-8">
+
+                <div class="space-y-2">
+
+                    <p class="text-gold-500 text-xs font-bold uppercase tracking-widest">
+                        店舗アクセス情報
+                    </p>
+
+                    <h2 class="font-mincho text-3xl font-extrabold text-stone-100">
+                        店舗情報・交通案内
+                    </h2>
+
+                </div>
+
+<!-- ADDRESS -->
+<div class="space-y-4 text-sm text-stone-300">
+
+    <!-- INFO -->
+    <div class="flex items-start gap-3">
+
+        <!-- Main Icon -->
+        
+
+        <div class="space-y-3">
+
+            <!-- Shop Name -->
+            <div>
+                <p class="font-bold text-stone-100 text-base">
+                    居酒屋 おうみや 三宮本店
+                </p>
+            </div>
+
+            <!-- Address -->
+            <div class="flex items-start gap-3 text-stone-300">
+
+                <span class="text-gold-400 w-5 text-center flex-shrink-0 mt-1">
+                    <i class="fa-solid fa-map-pin"></i>
+                </span>
+
+                <p class="leading-relaxed text-stone-400">
+                    〒651-0094<br>
+                    兵庫県神戸市中央区琴ノ緒町4丁目10-3 高架下401
+                </p>
+
+            </div>
+
+            <!-- Phone -->
+            <div class="flex items-center gap-3 text-stone-300">
+
+                <span class="text-gold-400 w-5 text-center flex-shrink-0">
+                    <i class="fa-solid fa-phone"></i>
+                </span>
+
+                <span>TEL：078-221-2254</span>
+
+            </div>
+
+            <!-- Payment -->
+            <div class="flex items-center gap-3 text-stone-300">
+
+                <span class="text-gold-400 w-5 text-center flex-shrink-0">
+                    <i class="fa-solid fa-credit-card"></i>
+                </span>
+
+             <span>
+                    お支払方法：現金・クレジットカード・PayPay対応
+                </span>
+
+            </div>
+
+            <!-- Smoking -->
+            <div class="flex items-center gap-3 text-stone-300">
+
+                <span class="text-gold-400 w-5 text-center flex-shrink-0">
+                    <i class="fa-solid fa-smoking"></i>
+                </span>
+
+                <span>
+                    全席喫煙可能
+                </span>
+
+            </div>
+            <!-- Access -->
+<div class="flex items-center gap-3 text-stone-300">
+
+    <span class="text-gold-400 w-5 text-center flex-shrink-0">
+        <i class="fa-solid fa-train-subway"></i>
+    </span>
+
+    <span>
+        三ノ宮駅から徒歩1分
+    </span>
+
+</div>
+
+<!-- Holiday -->
+<div class="flex items-center gap-3 text-stone-300">
+
+    <span class="text-gold-400 w-5 text-center flex-shrink-0">
+        <i class="fa-solid fa-calendar-check"></i>
+    </span>
+
+    <span>
+        年中無休
+    </span>
+
+</div>
+
+<!-- Reservation -->
+<div class="flex items-center gap-3 text-stone-300 items-start">
+
+    <span class="text-gold-400 w-5 text-center flex-shrink-0 mt-1">
+        <i class="fa-solid fa-calendar-days"></i>
+    </span>
+
+    <span>
+    <a 
+        href="https://tabelog.com/en/hyogo/A2801/A280101/28002868/" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class="text-gold-400 hover:text-gold-300 underline underline-offset-4 transition-all duration-300"
+    >
+        ご予約は食べログよりお願いいたします
+    </a>
+</span>
+
+</div>
+
+<!-- Capacity -->
+<div class="flex items-center gap-3 text-stone-300">
+
+    <span class="text-gold-400 w-5 text-center flex-shrink-0">
+        <i class="fa-solid fa-users"></i>
+    </span>
+
+    <span>
+        最大予約人数 60名様
+    </span>
+
+</div>
+
+<!-- Opening Hours -->
+<div class="flex items-center gap-3 text-stone-300">
+
+    <span class="text-gold-400 w-5 text-center flex-shrink-0">
+        <i class="fa-solid fa-clock"></i>
+    </span>
+
+    <span>
+        営業時間 16:00〜23:00（L.O. 22:30）
+    </span>
+
+</div>
+            
+
+        </div>
+
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="flex flex-wrap gap-3 pt-4">
+
+        <!-- GOOGLE MAP -->
+        <a
+            href="https://maps.google.com/?q=居酒屋おうみや三宮本店+兵庫県神戸市中央区琴ノ緒町4丁目10-3"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 bg-gold-600 hover:bg-gold-500 text-charcoal-950 font-bold text-xs px-5 py-3 rounded transition-all shadow-lg">
+
+            <i class="fa-solid fa-map-location-dot"></i>
+
+            Googleマップで開く
+
+        </a>
+
+        <!-- ROUTE -->
+        <a
+            href="https://www.google.com/maps/dir/?api=1&destination=居酒屋おうみや三宮本店+兵庫県神戸市中央区琴ノ緒町4丁目10-3"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 border border-gold-700 hover:border-gold-500 text-gold-400 hover:text-gold-300 font-bold text-xs px-5 py-3 rounded transition-all">
+
+            <i class="fa-solid fa-route"></i>
+
+            経路案内
+
+        </a>
+
+    </div>
+
+</div>
+            <!-- RIGHT -->
+            <div class="lg:col-span-7 space-y-4 w-full">
+
+                <div class="relative aspect-[16/10] w-full bg-charcoal-950 border border-gold-800/40 rounded overflow-hidden shadow-2xl">
+
+                    <!-- CLICKABLE MAP -->
+                    <iframe
+                        src="https://maps.google.com/maps?q=居酒屋おうみや三宮本店+兵庫県神戸市中央区琴ノ緒町4丁目10-3&t=&z=17&ie=UTF8&iwloc=&output=embed"
+                        width="100%"
+                        height="100%"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        class="pointer-events-auto">
+                    </iframe>
+
+                </div>
+
+                <p class="text-xs text-stone-500 text-center">
+                    地図をクリックするとGoogleマップで店舗位置を確認できます。
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+    <footer class="bg-charcoal-950 border-t border-gold-900/40 py-12 text-center text-xs text-stone-500">
+        <div class="max-w-7xl mx-auto px-4 space-y-4">
+            <p class="font-mincho text-gold-500 text-lg tracking-widest select-none">居酒屋 おうみや</p>
+            <p class="font-light">© 居酒屋 おうみや Sannomiya. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let serverMenuData = [];
+        let serverGalleryData = [];
+        let dynamicCategories = [{ key: 'all', label: 'すべて' }]; // Default base
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+        document.getElementById('mobileMenuBtn').addEventListener('click', toggleMobileMenu);
+
+        // Fetch & Initialize
+        async function loadServerData() {
+            try {
+                const response = await fetch('/api/site-data');
+                const data = await response.json();
+
+                // 1. Banner
+                const topBanner = document.getElementById('top-banner-text');
+                if (topBanner && data.topBannerText) {
+                    topBanner.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${data.topBannerText}`;
+                }
+
+                // 2. Categories
+                if (data.categories && Array.isArray(data.categories)) {
+                    dynamicCategories = [{ key: 'all', label: 'すべて' }, ...data.categories];
+                }
+
+                serverGalleryData = data.galleryData || [];
+                serverMenuData = data.menuData || [];
+
+                renderSpecialRecommendation(data.specialRecommendation);
+                renderSpaceGallery();
+                renderFilterButtons();
+                renderFoodMenu('all');
+            } catch(err) {
+                console.error(err);
+            }
+        }
+
+        // Render Special Recommendation dynamically based on API
+        function renderSpecialRecommendation(data) {
+            if(!data) return;
+            document.getElementById('special-recommendation').innerHTML = `
+                <div class="absolute -top-3 -left-3 bg-gold-600 text-charcoal-950 font-bold text-xs py-1 px-3 transform -rotate-3 rounded-sm">
+                    ${data.badge || ''}
+                </div>
+                <div class="border-b border-gold-800/40 pb-4 mb-6">
+                    <p class="text-[10px] text-gold-500 uppercase tracking-widest font-bold">
+                        ${data.subtitle || ''}
+                    </p>
+                    <h3 class="font-mincho text-xl font-bold text-stone-200 mt-1">
+                        ${data.title || ''}
+                    </h3>
+                </div>
+                <div class="space-y-4">
+                    ${(data.items || []).map(item => `
+                        <div class="flex items-start gap-3 bg-charcoal-950/60 p-3.5 border border-gold-950 rounded">
+                            ${item.image ? `
+                                <img src="${item.image}" class="w-12 h-12 object-cover rounded shadow-sm border border-gold-800/30" alt="">
+                            ` : `
+                                <span class="text-gold-500 mt-0.5 text-2xl w-12 text-center">
+                                    <i class="${item.icon}"></i>
+                                </span>
+                            `}
+                            <div>
+                                <p class="text-xs text-stone-400">${item.category || ''}</p>
+                                <p class="text-sm font-bold text-stone-200">${item.name || ''}</p>
+                                <p class="text-xs text-gold-400 font-semibold mt-1">${item.description || ''}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mt-6 pt-4 border-t border-gold-900/40 flex items-center justify-between text-xs text-stone-400">
+                    <span><i class="fa-solid fa-clock mr-1"></i> ${data.footer?.open || ''}</span>
+                    <span class="text-gold-400 font-semibold"><i class="fa-regular fa-thumbs-up mr-0.5"></i> ${data.footer?.extra || ''}</span>
+                </div>
+            `;
+        }
+
+        function renderSpaceGallery() {
+            const gallerySection = document.getElementById('gallery');
+            const galleryContainer = document.getElementById('server-gallery');
+            const validItems = serverGalleryData.filter(item => item && item.image && item.image.trim() !== '');
+
+            if(validItems.length === 0) {
+                gallerySection.style.display = 'none';
+                return;
+            }
+
+            gallerySection.style.display = 'block';
+            let html = '';
+            validItems.forEach(item => {
+                html += `
+                    <div class="relative group overflow-hidden rounded border border-gold-900/40">
+                        <img src="${item.image}" alt="${item.alt || ''}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-charcoal-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                            <span class="text-gold-400 font-mincho text-lg">${item.title || ''}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            galleryContainer.innerHTML = html;
+        }
+
+        function renderFilterButtons() {
+            const container = document.getElementById('filter-buttons');
+            let html = '';
+            dynamicCategories.forEach(cat => {
+                html += `<button onclick="filterMenuCategory('${cat.key}')" id="filter-${cat.key}" class="filter-btn px-5 py-2 text-xs sm:text-sm font-medium rounded-full border border-gold-800 text-stone-400 hover:border-gold-500 hover:text-gold-300 transition-all duration-300">${cat.label}</button>`;
+            });
+            container.innerHTML = html;
+            
+            const allBtn = document.getElementById('filter-all');
+            if (allBtn) {
+                allBtn.classList.add('border-gold-400', 'bg-gold-950/30', 'text-gold-300');
+            }
+        }
+
+        // Helper to grab category label from dynamic list
+        function getCategoryLabel(key) {
+            const found = dynamicCategories.find(c => c.key === key);
+            return found ? found.label : 'メニュー';
+        }
+
+        function renderFoodMenu(filter = 'all') {
+            const grid = document.getElementById('ryouri-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+
+            const filteredData = filter === 'all' 
+                ? serverMenuData 
+                : serverMenuData.filter(item => item.category === filter);
+
+            filteredData.forEach((item, index) => {
+                const itemId = item.id || `menu_item_${index}`;
+                item.id = itemId;
+                const label = getCategoryLabel(item.category);
+
+                const itemCard = document.createElement('div');
+                itemCard.className = "group bg-charcoal-950/80 border border-gold-900/40 hover:border-gold-500 rounded-sm overflow-hidden cursor-pointer shadow-lg transition-all duration-300 transform hover:-translate-y-1";
+                itemCard.setAttribute('onclick', `openLightbox('${itemId}')`);
+                
+                itemCard.innerHTML = `
+                    <div class="aspect-[4/3] w-full overflow-hidden relative border-b border-gold-950">
+                        <img src="${item.image || ''}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-2 left-2 bg-charcoal-950/80 text-gold-400 text-[10px] font-bold px-2 py-0.5 rounded border border-gold-900/30">
+                            ${label}
+                        </span>
+                    </div>
+                    <div class="p-4 space-y-1">
+                        <div class="flex justify-between items-start gap-2">
+                            <h4 class="font-mincho font-bold text-stone-200 text-sm sm:text-base group-hover:text-gold-400 transition-colors">${item.name}</h4>
+                            <span class="text-gold-400 font-bold font-mono text-sm">¥${item.price}</span>
+                        </div>
+                        <p class="text-xs text-stone-400 font-light line-clamp-2 leading-relaxed h-8">${item.desc || ''}</p>
+                    </div>
+                `;
+                grid.appendChild(itemCard);
+            });
+        }
+
+        function filterMenuCategory(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('border-gold-400', 'bg-gold-950/30', 'text-gold-300');
+                btn.classList.add('border-gold-800', 'text-stone-400');
+            });
+            const activeBtn = document.getElementById(`filter-${category}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('border-gold-800', 'text-stone-400');
+                activeBtn.classList.add('border-gold-400', 'bg-gold-950/30', 'text-gold-300');
+            }
+            renderFoodMenu(category);
+        }
+
+        // Lightbox Functions
+        function openLightbox(id) {
+            const item = serverMenuData.find(d => d.id == id);
+            if(!item) return;
+
+            document.getElementById('lightbox-image').src = item.image || '';
+            document.getElementById('lightbox-tag').innerText = getCategoryLabel(item.category);
+            document.getElementById('lightbox-title').innerText = item.name;
+            document.getElementById('lightbox-desc').innerText = item.desc || '';
+            document.getElementById('lightbox-price').innerText = `価格：¥${item.price}（税込）`;
+
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+        document.getElementById('lightbox-modal').addEventListener('click', (e) => {
+            if(e.target === document.getElementById('lightbox-modal')) closeLightbox();
+        });
+
+        // Seat Preview Logic
+        const seatData = {
+            counter: { title: '大皿カウンター席', subtitle: 'お一人様やお二人での語らいに最適', desc: '一番人気の特等席です。', image: 'images/seat_counter.jpg', badge: '一番人気' },
+            tatami: { title: '2階お座敷', subtitle: '最大60名様の団体・宴会利用に完全対応', desc: '和風お座敷です。', image: 'images/seat_tatami.jpg', badge: '宴会に最適' },
+            table: { title: 'テーブル座席', subtitle: 'ワイワイ楽しむ定番席', desc: '快適なテーブル席です。', image: 'images/seat_table.jpg', badge: '定番快適席' }
+        };
+
+        function highlightSeat(seatKey) {
+            ['counter', 'tatami', 'table'].forEach(key => {
+                const el = document.getElementById(`map-${key}`);
+                if(el){
+                    el.classList.remove('border-gold-400', 'bg-gold-950/50', 'scale-[1.02]');
+                    el.classList.add('border-gold-800/60', 'bg-charcoal-800/80');
+                }
+            });
+            const activeEl = document.getElementById(`map-${seatKey}`);
+            if(activeEl){
+                activeEl.classList.remove('border-gold-800/60', 'bg-charcoal-800/80');
+                activeEl.classList.add('border-gold-400', 'bg-gold-950/50', 'scale-[1.02]');
+            }
+            const data = seatData[seatKey];
+            document.getElementById('seat-preview-image').src = data.image;
+            document.getElementById('seat-preview-title').innerText = data.title;
+            document.getElementById('seat-preview-subtitle').innerText = data.subtitle;
+            document.getElementById('seat-preview-desc').innerText = data.desc;
+            document.getElementById('seat-preview-badge').innerText = data.badge;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadServerData();
+            highlightSeat('tatami');
+        });
+    </script>
+</body>
+</html>
