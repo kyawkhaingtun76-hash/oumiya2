@@ -17,15 +17,23 @@ app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 # Explicitly whitelist allowed image extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
 
-# Initialize Firebase Admin SDK inside the backend
-# In production, set the GOOGLE_APPLICATION_CREDENTIALS environment variable 
-# pointing to your downloaded service account JSON file.
+# Initialize Firebase Admin SDK with Explicit Path Support for Render Production
 try:
     if not firebase_admin._apps:
-        firebase_admin.initialize_app()
+        # Fetch the custom file path from Render's environment variable
+        cred_path = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+        
+        if cred_path and os.path.exists(cred_path):
+            # Explicitly load the secret credentials file data
+            cred = credentials.Certificate(cred_path)
+            firebase_admin.initialize_app(cred)
+            print(f"SUCCESS: Firebase Admin SDK initialized via path: {cred_path}")
+        else:
+            # Fallback for local debugging contexts
+            firebase_admin.initialize_app()
+            print("SUCCESS: Firebase Admin initialized via default machine credentials.")
 except Exception as e:
-    print(f"Warning: Firebase Admin failed to load automatically. Error: {e}")
-    print("Ensure GOOGLE_APPLICATION_CREDENTIALS env variable is configured in your production hosting platform.")
+    print(f"CRITICAL ERROR: Firebase Admin failed to initialize. Details: {e}")
 
 # Whitelisted Administrator Email Target Address
 ADMIN_EMAIL_WHITELIST = "kd1427178@st.kobedenshi.ac.jp"
@@ -34,41 +42,11 @@ STORAGE_BASE = os.environ.get('RENDER_DISK_MOUNT_PATH', '.')
 UPLOAD_FOLDER = os.path.join(STORAGE_BASE, 'uploads')
 DATA_FILE = os.path.join(STORAGE_BASE, 'site_data.json')
 
+# Ensure dynamic storage directories exist safely
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Helper extension checker
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 # ========================================================
-# BACKEND SECURITY DECORATOR
-# ========================================================
-def require_admin_auth(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({"success": False, "message": "認証エラー：ログイン情報が見つかりません。"}), 401
-        
-        # Extract ID token passed from client
-        id_token = auth_header.split('Bearer ')[1]
-        try:
-            # Verify the validity and integrity of the token via Firebase server side
-            decoded_token = auth.verify_id_token(id_token)
-            user_email = decoded_token.get('email')
-            
-            # Check if authenticated user matches target email
-            if user_email != ADMIN_EMAIL_WHITELIST:
-                return jsonify({"success": False, "message": "アクセス拒否：認可されていないアカウントです。"}), 403
-                
-        except Exception as err:
-            return jsonify({"success": False, "message": f"認証トークンの検証に失敗しました: {str(err)}"}), 401
-            
-        return f(*args, **kwargs)
-    return decorated_function
-
-# ========================================================
-# DEFAULT BACKEND STRUCT INITIALIZATION
+# DEFAULT DATA STRUCTURE (Fallback if site_data.json is missing)
 # ========================================================
 default_site_data = {
     "topBannerText": "本日も明石昼網より獲れたて新鮮な「活だこ」が入荷しております！",
@@ -80,59 +58,104 @@ default_site_data = {
     ],
     "specialRecommendation": {
         "badge": "本日のイチオシ",
-        "subtitle": "CHEF'S SPECIALS",
-        "title": "店主厳選の極み一皿",
-        "footer": {
-            "open": "営業時間: 17:00 〜 24:00 (L.O. 23:30)",
-            "extra": "※仕入れ状況により売り切れ次第終了"
-        },
-        "items": [
-            {
-                "category": "看板料理",
-                "name": "明石だこのレアぶつ切り",
-                "description": "コリコリ抜群の歯ごたえと噛むほどに溢れる甘み",
-                "image": "",
-                "icon": "fa-solid fa-star"
-            }
-        ]
+        "title": "極上 明石だこの姿造り",
+        "desc": "コリコリとした抜群の歯ごたえと、噛むほどに広がる濃厚な甘み。吸盤の湯引きも添えて、本場の味をお届けします。",
+        "price": "1,480円（税込1,628円）",
+        "image": "images/reco_octopus.jpg"
     },
-    "galleryData": [],
-    "menuData": []
+    "menuItems": [
+        {
+            "id": "item-oct-01",
+            "category": "octopus",
+            "name": "明石だこぶつ切り（湯引き）",
+            "price": "880円",
+            "desc": "職人が絶妙な火加減でサッと茹で上げました。特製ポン酢または梅肉でさっぱりとどうぞ。",
+            "image": "images/menu_oct_butsu.jpg",
+            "isAvailable": True
+        }
+    ]
 }
 
 def load_site_data():
     if not os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(default_site_data, f, ensure_ascii=False, indent=4)
         return default_site_data
+    
     try:
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
-    except Exception:
+    except Exception as e:
+        print(f"Error reading site_data.json: {e}")
         return default_site_data
 
+def save_site_data(data):
+    try:
+        with open(DATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        return True
+    except Exception as e:
+        print(f"Error saving site_data.json: {e}")
+        return False
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 # ========================================================
-# API ROUTES
+# SECURITY AUTHENTICATION DECORATOR MIDDLEWARE
 # ========================================================
+def require_admin_token(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({"success": False, "message": "認証エラー: ログインしてください"}), 401
+        
+        id_token = auth_header.split('Bearer ')[1]
+        
+        try:
+            # Server-side cryptographic check against Google's OAuth servers
+            decoded_token = auth.verify_id_token(id_token)
+            user_email = decoded_token.get('email')
+            
+            if user_email != ADMIN_EMAIL_WHITELIST:
+                return jsonify({"success": False, "message": f"アクセス拒否: {user_email} は管理者権限がありません"}), 403
+                
+            return f(*args, **kwargs)
+            
+        except Exception as e:
+            return jsonify({"success": False, "message": f"認証トークンの検証に失敗しました: {str(e)}"}), 401
+            
+    return decorated_function
+
+# ========================================================
+# API SERVER ROUTING ENDPOINTS
+# ========================================================
+
+# Get Data
 @app.route('/api/site-data', methods=['GET'])
 def get_site_data():
     return jsonify(load_site_data())
 
+# Save Data (Protected)
 @app.route('/api/site-data', methods=['POST'])
-@require_admin_auth  # Protected Route
-def save_site_data():
+@require_admin_token
+def update_site_data():
     try:
         new_data = request.get_json()
         if not new_data:
             return jsonify({"success": False, "message": "データが空です"}), 400
             
-        with open(DATA_FILE, 'w', encoding='utf-8') as f:
-            json.dump(new_data, f, ensure_ascii=False, indent=4)
-            
-        return jsonify({"success": True, "message": "サーバー上のサイトデータを正常に更新しました。"})
+        if save_site_data(new_data):
+            return jsonify({"success": True, "message": "ウェブサイトのデータを正常に更新保存しました！"})
+        else:
+            return jsonify({"success": False, "message": "ファイルへの書き込みに失敗しました"}), 500
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
+# File Upload Processing Routing (Protected)
 @app.route('/api/upload', methods=['POST'])
-@require_admin_auth  # Protected Route
+@require_admin_token
 def upload_file():
     try:
         if 'image' not in request.files:
@@ -142,7 +165,6 @@ def upload_file():
         if file.filename == '':
             return jsonify({"success": False, "message": "ファイル名が空です"}), 400
 
-        # Validate file suffix matching extensions array rules
         if not allowed_file(file.filename):
             return jsonify({"success": False, "message": "許可されていないファイル形式です（画像のみ可）"}), 400
 
@@ -151,8 +173,9 @@ def upload_file():
         counter = 1
         final_filename = filename
 
+        # Keep checking if file name exists to avoid collisions
         while os.path.exists(os.path.join(UPLOAD_FOLDER, final_filename)):
-            final_filename = f"{base}_{counter}{ext}"
+            final_filename = f\"{base}_{counter}{ext}\"
             counter += 1
 
         save_path = os.path.join(UPLOAD_FOLDER, final_filename)
@@ -166,10 +189,12 @@ def upload_file():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
+# Dynamic Image asset Serving Layer
 @app.route('/uploads/<filename>')
 def serve_uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
+# Direct Base Landing Routing 
 @app.route('/')
 def serve_index():
     return send_from_directory('.', 'index.html')
@@ -179,5 +204,5 @@ def serve_admin():
     return send_from_directory('.', 'admin.html')
 
 if __name__ == '__main__':
-    # For local testing only. Production environments should use a WSGI server like Gunicorn.
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    # Default execution wrapper entry context 
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
