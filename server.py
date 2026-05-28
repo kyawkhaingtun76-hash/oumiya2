@@ -11,42 +11,33 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 # ========================================================
 # SECURITY & PRODUCTION CONFIG
 # ========================================================
-# Enforce a 5MB maximum file upload payload restriction (Prevents DoS attacks)
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
-
-# Explicitly whitelist allowed image extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
 
-# Initialize Firebase Admin SDK with Explicit Path Support for Render Production
 try:
     if not firebase_admin._apps:
-        # Fetch the custom file path from Render's environment variable
         cred_path = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
         
         if cred_path and os.path.exists(cred_path):
-            # Explicitly load the secret credentials file data
             cred = credentials.Certificate(cred_path)
             firebase_admin.initialize_app(cred)
             print(f"SUCCESS: Firebase Admin SDK initialized via path: {cred_path}")
         else:
-            # Fallback for local debugging contexts
             firebase_admin.initialize_app()
             print("SUCCESS: Firebase Admin initialized via default machine credentials.")
 except Exception as e:
     print(f"CRITICAL ERROR: Firebase Admin failed to initialize. Details: {e}")
 
-# Whitelisted Administrator Email Target Address
 ADMIN_EMAIL_WHITELIST = "kd1427178@st.kobedenshi.ac.jp"
 
 STORAGE_BASE = os.environ.get('RENDER_DISK_MOUNT_PATH', '.')
 UPLOAD_FOLDER = os.path.join(STORAGE_BASE, 'uploads')
 DATA_FILE = os.path.join(STORAGE_BASE, 'site_data.json')
 
-# Ensure dynamic storage directories exist safely
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ========================================================
-# DEFAULT DATA STRUCTURE (Fallback if site_data.json is missing)
+# DEFAULT DATA STRUCTURE
 # ========================================================
 default_site_data = {
     "topBannerText": "本日も明石昼網より獲れたて新鮮な「活だこ」が入荷しております！",
@@ -114,7 +105,6 @@ def require_admin_token(f):
         id_token = auth_header.split('Bearer ')[1]
         
         try:
-            # Server-side cryptographic check against Google's OAuth servers
             decoded_token = auth.verify_id_token(id_token)
             user_email = decoded_token.get('email')
             
@@ -132,12 +122,10 @@ def require_admin_token(f):
 # API SERVER ROUTING ENDPOINTS
 # ========================================================
 
-# Get Data
 @app.route('/api/site-data', methods=['GET'])
 def get_site_data():
     return jsonify(load_site_data())
 
-# Save Data (Protected)
 @app.route('/api/site-data', methods=['POST'])
 @require_admin_token
 def update_site_data():
@@ -153,7 +141,6 @@ def update_site_data():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-# File Upload Processing Routing (Protected)
 @app.route('/api/upload', methods=['POST'])
 @require_admin_token
 def upload_file():
@@ -173,9 +160,8 @@ def upload_file():
         counter = 1
         final_filename = filename
 
-        # Keep checking if file name exists to avoid collisions
         while os.path.exists(os.path.join(UPLOAD_FOLDER, final_filename)):
-            final_filename = f\"{base}_{counter}{ext}\"
+            final_filename = f"{base}_{counter}{ext}"
             counter += 1
 
         save_path = os.path.join(UPLOAD_FOLDER, final_filename)
@@ -189,12 +175,10 @@ def upload_file():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-# Dynamic Image asset Serving Layer
 @app.route('/uploads/<filename>')
 def serve_uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
-# Direct Base Landing Routing 
 @app.route('/')
 def serve_index():
     return send_from_directory('.', 'index.html')
@@ -204,5 +188,4 @@ def serve_admin():
     return send_from_directory('.', 'admin.html')
 
 if __name__ == '__main__':
-    # Default execution wrapper entry context 
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
