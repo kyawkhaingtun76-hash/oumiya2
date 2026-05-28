@@ -224,13 +224,12 @@
         };
 
         let authObj = null;
-        let currentUserToken = null; // Store secure identity token in runtime memory context
+        let currentUserToken = null;
 
         try {
             const app = initializeApp(firebaseConfig);
             authObj = getAuth(app);
             
-            // Listen for changes in authentication status and refresh internal state variables
             onAuthStateChanged(authObj, async (user) => {
                 if (user && user.email === ADMIN_EMAIL_WHITELIST) {
                     currentUserToken = await user.getIdToken();
@@ -246,9 +245,6 @@
             console.warn("Firebase Auth failed initialization. Using local fallback flow.", e);
         }
 
-        // ==========================================
-        // AUTHENTICATION LOGIC
-        // ==========================================
         window.checkLocalAuth = function() {
             const isAuth = sessionStorage.getItem('oumiya_admin_auth');
             const loginWall = document.getElementById('login-wall');
@@ -257,7 +253,6 @@
             if (isAuth === 'true') {
                 loginWall.classList.add('hidden');
                 dashboardWrapper.classList.remove('hidden');
-                // Avoid invoking state initialization loop if token hasn't finished arriving yet
                 if (authObj && !currentUserToken) return;
                 initSystemState();
             } else {
@@ -333,9 +328,6 @@
             setTimeout(() => successToast.remove(), 5000);
         }
 
-        // ==========================================
-        // SYSTEM INITIALIZATION
-        // ==========================================
         async function initSystemState() {
             try {
                 const response = await fetch('/api/site-data');
@@ -367,9 +359,6 @@
             if (activeTab === 'special') renderSpecialAdministrationCards();
         }
 
-        // ==========================================
-        // CATEGORY RENDER
-        // ==========================================
         window.renderCategoryAdministrationCards = function() {
             const container = document.getElementById('wrapper-category-grid');
             container.innerHTML = "";
@@ -409,9 +398,6 @@
             renderMenuAdministrationCards(); 
         }
 
-        // ==========================================
-        // MENU RENDER
-        // ==========================================
         window.renderMenuAdministrationCards = function() {
             const container = document.getElementById('wrapper-menu-grid');
             container.innerHTML = "";
@@ -484,9 +470,6 @@
 
         window.syncMenuValue = function(idx, key, val) { runtimeState.menuData[idx][key] = val; }
 
-        // ==========================================
-        // GALLERY RENDER
-        // ==========================================
         window.renderGalleryAdministrationCards = function() {
             const container = document.getElementById('wrapper-gallery-grid');
             container.innerHTML = "";
@@ -538,9 +521,6 @@
 
         window.syncGalleryValue = function(idx, key, val) { runtimeState.galleryData[idx][key] = val; }
 
-        // ==========================================
-        // SPECIAL RECOMMENDATION RENDER
-        // ==========================================
         window.renderSpecialAdministrationCards = function() {
             const sr = runtimeState.specialRecommendation;
             document.getElementById('sr-badge').value = sr.badge || '';
@@ -607,9 +587,6 @@
         window.syncSpecialFooter = function(key, val) { runtimeState.specialRecommendation.footer[key] = val; }
         window.syncSpecialItemValue = function(idx, key, val) { runtimeState.specialRecommendation.items[idx][key] = val; }
 
-        // ==========================================
-        // SHARED UTILS
-        // ==========================================
         window.removeDataEntry = function(type, index) {
             const proceed = confirm("このアイテムを完全に削除してもよろしいですか？");
             if (proceed) {
@@ -648,7 +625,6 @@
             containerFormData.append('image', targetFile); 
 
             try {
-                // Attach user's Identity Token inside Authorization headers
                 const response = await fetch('/api/upload', { 
                     method: 'POST', 
                     headers: {
@@ -689,7 +665,6 @@
             runtimeState.topBannerText = document.getElementById('input-global-banner').value;
 
             try {
-                // Attach user's Identity Token inside Authorization headers
                 const response = await fetch('/api/site-data', {
                     method: 'POST',
                     headers: { 
