@@ -253,7 +253,10 @@
             if (isAuth === 'true') {
                 loginWall.classList.add('hidden');
                 dashboardWrapper.classList.remove('hidden');
-                if (authObj && !currentUserToken) return;
+                // FIXED: Force evaluation wait only if Firebase token extraction is processing
+                if (authObj && authObj.currentUser && !currentUserToken) {
+                    return; 
+                }
                 initSystemState();
             } else {
                 loginWall.classList.remove('hidden');
@@ -618,6 +621,12 @@
         }
 
         window.executeImageUploadPipeline = async function(inputNode, type, index) {
+            // FIXED: Block upload attempts if the token hasn't synced yet
+            if (!currentUserToken) {
+                alert("認証情報の同期が完了していません。ページを一度更新（F5）し、再試行してください。");
+                return;
+            }
+
             const targetFile = inputNode.files[0];
             if (!targetFile) return;
 
@@ -628,7 +637,7 @@
                 const response = await fetch('/api/upload', { 
                     method: 'POST', 
                     headers: {
-                        'Authorization': currentUserToken ? `Bearer ${currentUserToken}` : ''
+                        'Authorization': `Bearer ${currentUserToken}`
                     },
                     body: containerFormData 
                 });
@@ -662,6 +671,12 @@
         }
 
         window.commitMasterDataToServer = async function() {
+            // FIXED: Block save attempts if the token hasn't synced yet
+            if (!currentUserToken) {
+                alert("認証情報の同期が完了していません。ページを一度更新（F5）し、再試行してください。");
+                return;
+            }
+
             runtimeState.topBannerText = document.getElementById('input-global-banner').value;
 
             try {
@@ -669,7 +684,7 @@
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'Authorization': currentUserToken ? `Bearer ${currentUserToken}` : ''
+                        'Authorization': `Bearer ${currentUserToken}`
                     },
                     body: JSON.stringify(runtimeState)
                 });
